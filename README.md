@@ -1,194 +1,302 @@
-🤖 DecodeBot Personal — Rule-Based AI Chatbot
-DecodeLabs AI Engineering Internship — Week 1
-Project: AI-Powered Conversational Bot (Rule-Based Edition)
-Type: Single-File Python Chatbot with Personalization
-Architecture: Intent Matching + Session Memory + Profile Management
+🎯 DecodeLabs AI Engineering Internship — Week 3
+Project 3: Enterprise AI Recommendation Logic (Tech Stack Recommender)
+Internship Track: AI Engineering Intern
+Framework: Scikit-Learn | Content-Based Filtering | TF-IDF Vectorization
+Algorithm: Cosine Similarity Matching
+Architecture: Vector Mapping Space & Content-Based Filtering Pipeline
+Batch: 2026 | Powered by DecodeLabs
 📋 Table of Contents
 Project Overview
 Key Features
 Technical Stack
+Architecture Diagram
 Project Structure
 Installation & Setup
+Configuration (.env)
 How to Run
-Commands Guide
-Code Breakdown
+Interactive Demo
+How It Works
+Results & Output
 Screenshots
 Learning Outcomes
 Acknowledgements
 🎯 Project Overview
-DecodeBot Personal is a fully functional, rule-based AI chatbot built entirely in pure Python — without any external AI APIs or ML libraries. It uses a powerful intent-matching engine (exact match, contains, regex) to understand user input and respond intelligently.
-The bot features:
-🧠 Multi-layer intent detection (exact → regex → contains)
-👤 Personal profile system (editable at runtime)
-📝 Session context memory (20-turn history)
-🛡️ Admin commands for profile management
-🌐 Optional web UI (Flask-based)
-🧪 Built-in self tests
+This project implements an Enterprise AI Recommendation System that matches user skills to optimal job roles using Content-Based Filtering and TF-IDF Vectorization.
+What It Does:
+🧑‍💻 Captures user skills through an interactive terminal survey
+🧠 Expands abbreviations and synonyms (e.g., "ml" → "Machine Learning")
+📊 Vectorizes both user profile and job requirements using TF-IDF
+🎯 Computes Cosine Similarity to find the best matching job roles
+📈 Ranks top recommendations with confidence tiers and skill gap analysis
+Job Roles Covered:
+Table
+Role	Key Skills
+🧪 Data Scientist	Python, Machine Learning, SQL, Statistics, TensorFlow, PyTorch
+⚙️ DevOps Engineer	AWS, Docker, Kubernetes, CI/CD, Linux, Jenkins, Ansible
+💻 Backend Developer	Java, Python, SQL, APIs, Django, Node.js, MongoDB
+🎨 Frontend Developer	JavaScript, HTML, CSS, React, Angular, TypeScript, Vue
+☁️ Cloud Architect	AWS, Azure, Security, Terraform, CloudFormation, Infrastructure
 ✨ Key Features
 Table
-Feature	Description
-✅ Pure Python	Zero external AI dependencies — fully offline
-✅ 3-Tier Intent Matching	Exact phrase → Regex pattern → Keyword contains
-✅ Confidence Scoring	Every response has a confidence score (1.0 → 0.35)
-✅ Personal Identity	Customizable name, spouse, and personality story
-✅ Session Memory	Maintains last 20 conversation turns
-✅ Admin Commands	/profile-show, /profile-set, /profile-export, /profile-import
-✅ Rotating Logs	Automatic log rotation (2MB max, 3 backups)
-✅ Web UI Mode	Optional Flask-based chat interface
-✅ Self Tests	Built-in --selftest flag for validation
-✅ Graceful Exit	Handles Ctrl+C and EOF cleanly
+Feature	Description	Status
+✅ Secure Config	Environment variables via .env — no hardcoded paths or settings	✅
+✅ Synonym Expansion	Auto-expands abbreviations (ml, ai, cicd, web, cloud, ds, py, js, db, devops)	✅
+✅ TF-IDF Vectorization	Converts text skills into numerical vectors for mathematical comparison	✅
+✅ Cosine Similarity	Measures directional alignment between user and job skill vectors	✅
+✅ Confidence Tiers	HIGH (≥35%), MEDIUM (≥10%), LOW (<10%) compatibility scoring	✅
+✅ Skill Gap Analysis	Identifies missing skills for each recommended role	✅
+✅ CSV Ingestion	Auto-detects and loads external raw_skills.csv dataset	✅
+✅ Fallback Dataset	Embedded baseline data if CSV is missing or corrupted	✅
+✅ Robust Error Handling	Custom exceptions for dataset, vectorization, and I/O failures	✅
+✅ Auto-Logging	Dual-channel logging (Console + app.log file)	✅
+✅ Professional Terminal UI	Unicode box-drawing frames with safe ANSI colors	✅
+✅ Type Hints	Full function typing for code clarity and IDE support	✅
 🛠️ Technical Stack
 plain
-Python 3.x (Standard Library Only)
-├── re          → Regex intent matching
-├── json        → Profile import/export
-├── logging     → Rotating file handlers
-├── argparse    → CLI argument parsing
-└── pathlib     → Cross-platform file paths
-
-Optional:
-└── Flask       → Web UI mode (pip install Flask)
+Python 3.10+
+├── Standard Library
+│   ├── os, re, sys, logging, textwrap
+│   ├── dataclasses, datetime, pathlib
+│   └── typing (Dict, List, Tuple, Optional, Final)
+│
+├── Third-Party
+│   ├── pandas              → Data manipulation & CSV ingestion
+│   ├── numpy               → Numerical computations
+│   ├── scikit-learn        → TF-IDF Vectorizer + Cosine Similarity
+│   └── python-dotenv       → Secure configuration management
+│
+└── Design Patterns
+    ├── Strategy (Matching Algorithm)
+    ├── Factory (Dataset Loader)
+    └── DTO (Recommendation dataclass)
+🏗️ Architecture Diagram
+plain
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         USER INPUT LAYER                                │
+│                    Interactive Terminal Survey                          │
+│              (3 Skills → Regex Sanitization → Expansion)                  │
+└─────────────────────────────┬───────────────────────────────────────────┘
+                              │
+┌─────────────────────────────▼───────────────────────────────────────────┐
+│                      DATA INGESTION LAYER                                 │
+│  ┌─────────────────────┐      ┌─────────────────────┐                  │
+│  │   CSV File Loader   │      │  Fallback Dataset   │                  │
+│  │  (raw_skills.csv)   │─────→│  (Embedded JSON)    │                  │
+│  └─────────────────────┘      └─────────────────────┘                  │
+└─────────────────────────────┬───────────────────────────────────────────┘
+                              │
+┌─────────────────────────────▼───────────────────────────────────────────┐
+│                    VECTORIZATION LAYER (TF-IDF)                         │
+│                                                                         │
+│   User Skills ──→┌─────────────┐                                       │
+│                   │  TF-IDF     │──→ Skill Vectors (Sparse Matrix)      │
+│   Job Skills ────→│ Vectorizer  │                                       │
+│                   └─────────────┘                                       │
+└─────────────────────────────┬───────────────────────────────────────────┘
+                              │
+┌─────────────────────────────▼───────────────────────────────────────────┐
+│                  SIMILARITY COMPUTATION LAYER                           │
+│                                                                         │
+│   User Vector ──→┌─────────────────┐                                   │
+│                   │ Cosine Similarity │──→ Similarity Scores [0.0 - 1.0] │
+│   Job Vectors ──→│   (sklearn)     │                                   │
+│                   └─────────────────┘                                   │
+└─────────────────────────────┬───────────────────────────────────────────┘
+                              │
+┌─────────────────────────────▼───────────────────────────────────────────┐
+│                   RECOMMENDATION ENGINE LAYER                             │
+│                                                                         │
+│   ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐         │
+│   │  Rank & Sort    │  │ Confidence Tier │  │ Skill Gap       │         │
+│   │  (Top-N)        │  │ Classification  │  │ Analysis        │         │
+│   └─────────────────┘  └─────────────────┘  └─────────────────┘         │
+└─────────────────────────────────────────────────────────────────────────┘
 📁 Project Structure
 plain
-DecodeLabs-Week1-RuleBot/
+DecodeLabs-Week3-TechRecommender/
 │
-├── 📄 README.md                    ← You are here
-├── 📄 decodebot_personal.py        ← Main Python script (single file!)
-├── 📄 user_profile.json            ← Auto-generated profile file
+├── 📄 README.md                          ← You are here
+├── 📄 decodelabs_project3_vvip.py        ← Main application (single file)
+├── 📄 .env                               ← Environment configuration (DO NOT UPLOAD TO GITHUB!)
+├── 📄 .gitignore                         ← Excludes .env, logs/, *.log
+├── 📄 requirements.txt                   ← Python dependencies
 │
-└── 📂 logs/                        ← Auto-created on first run
-    └── 📄 decodebot_personal.log   ← Conversation & error logs
+├── 📂 logs/
+│   └── 📄 app.log                        ← Auto-generated audit trail
+│
+├── 📄 raw_skills.csv                     ← Optional external dataset
+│
+└── 📂 assets/
+    ├── 📸 screenshot_input.png             ← User skill input screenshot
+    ├── 📸 screenshot_output.png            ← Recommendation results screenshot
+    └── 📸 screenshot_logs.png            ← app.log audit trail screenshot
 ⚙️ Installation & Setup
 Step 1: Clone or Download
 bash
-git clone https://github.com/yourusername/DecodeLabs-Week1-RuleBot.git
-cd DecodeLabs-Week1-RuleBot
-Step 2: Run (No dependencies needed!)
+git clone https://github.com/yourusername/DecodeLabs-Week3-TechRecommender.git
+cd DecodeLabs-Week3-TechRecommender
+Step 2: Create Virtual Environment (Recommended)
 bash
-python decodebot_personal.py
-Optional: Web UI Mode
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# macOS/Linux
+source venv/bin/activate
+Step 3: Install Dependencies
 bash
-pip install Flask
-python decodebot_personal.py --web
-Optional: Run Self Tests
+pip install pandas numpy scikit-learn python-dotenv
+Or use requirements file:
 bash
-python decodebot_personal.py --selftest
+pip install -r requirements.txt
+Step 4: Create .env File
+Create a file named .env in the same directory as the Python script:
+env
+# ── Dataset ───────────────────────────
+CSV_PATH=raw_skills.csv
+
+# ── Logging ───────────────────────────
+LOG_LEVEL=INFO
+LOG_FILE=app.log
+LOG_DIR=logs
+
+# ── Recommendation Engine ─────────────
+MIN_SKILLS=3
+TOP_N=3
+SIMILARITY_HIGH=0.35
+SIMILARITY_MED=0.10
+
+# ── Fallback Profile ──────────────────
+FALLBACK_SKILLS=Python,Cloud Computing,Automation
+⚠️ IMPORTANT: Add .env to your .gitignore file so it never gets uploaded to GitHub!
+gitignore
+# .gitignore
+.env
+logs/
+*.log
+__pycache__/
+venv/
 🚀 How to Run
-Interactive CLI Mode
+Run the Main Script
 bash
-python decodebot_personal.py
-Sample Conversation
+python decodelabs_project3_vvip.py
+Expected Interaction Flow:
 plain
-DecodeBot Personal — type 'bye' or 'exit' to quit. Admin commands start with '/'.
+╔═══════════════════════════════════════════════════════════════════════════╗
+║          DECODELABS DIGITAL MATCHMAKER: INTERACTIVE SURVEY                ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+║  Please enter exactly 3 skills, pressing Enter after each one.            ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+▸ Skill 1: Python
+▸ Skill 2: Machine Learning
+▸ Skill 3: SQL
 
-You: Hi
-Bot: My name is Ahmed, but my absolute identity is 'MARIYUM KA AHMED'. 
-     If you want to know my details: My wifey's name is Mariyum. 
-     She is incredibly stubborn (bhot ziddi hai) but she is extremely beautiful and cute (bhoot pyari hai). 
-     She loves me deeply, and I love her immensely in return.
+╔═══════════════════════════════════════════════════════════════════════════╗
+║               CRITICAL ARCHITECTURE REPORT: TOP-3 RECOMMENDATIONS           ║
+╠═══════════════════════════════════════════════════════════════════════════╣
+ 1. 🎯 JOB ROLE ARCHETYPE : Data Scientist ([HIGH COMPATIBILITY])
+    📈 Vector Fit Matching Index : 85.42%
+    ⚠️  Core Skill Gaps Detected  : Statistics, TensorFlow, PyTorch
+    🧬 Full Vocabulary Matrix    : Python Machine Learning Data Analysis...
 
-     How can I help you today?
+╠═══════════════════════════════════════════════════════════════════════════╣
+ 2. 🎯 JOB ROLE ARCHETYPE : Backend Developer ([MEDIUM COMPATIBILITY])
+    📈 Vector Fit Matching Index : 62.15%
+    ⚠️  Core Skill Gaps Detected  : Java, Django, Node.js, Express
+    🧬 Full Vocabulary Matrix    : Java Python SQL APIs Django Node...
 
-You: What's your name?
-Bot: My name is Ahmed, but my absolute identity is 'MARIYUM KA AHMED'...
+╠═══════════════════════════════════════════════════════════════════════════╣
+ 3. 🎯 JOB ROLE ARCHETYPE : DevOps Engineer ([LOW COMPATIBILITY])
+    📈 Vector Fit Matching Index : 18.33%
+    ⚠️  Core Skill Gaps Detected  : AWS, Docker, Kubernetes, CI/CD...
+    🧬 Full Vocabulary Matrix    : AWS Docker Kubernetes CI/CD...
 
-You: /profile-show
-Bot: {
-       "user_name": "Ahmed",
-       "spouse_name": "Mariyum",
-       "notes": "Wife is loving and a bit stubborn; user loves her back.",
-       "display_name_response": "MARIYUM KA AHMED"
-     }
-
-You: /profile-set user_name=Ali
-Bot: Profile updated: user_name = Ali
-
-You: bye
-Bot: Goodbye! Have a great day.
-⌨️ Commands Guide
-Admin Commands (start with /)
+╚═══════════════════════════════════════════════════════════════════════════╝
+🎮 Interactive Demo
+Sample Inputs & Expected Outputs:
 Table
-Command	Description	Example
-/profile-show	Display current profile JSON	/profile-show
-/profile-set key=value	Update a profile field	/profile-set user_name=Ali
-/profile-export file.json	Save profile to file	/profile-export my_profile.json
-/profile-import file.json	Load profile from file	/profile-import my_profile.json
-CLI Arguments
+Input Skills	Top Recommendation	Confidence	Key Gaps
+Python, ML, SQL	Data Scientist	HIGH	Statistics, TensorFlow
+AWS, Docker, Linux	DevOps Engineer	HIGH	Kubernetes, Jenkins
+HTML, CSS, JS	Frontend Developer	HIGH	React, Angular, TypeScript
+Cloud, Security, Python	Cloud Architect	HIGH	Terraform, Azure
+Random, Words, Here	(Fallback activated)	—	—
+Synonym Expansion Examples:
 Table
-Flag	Description
---log	Enable file logging to /logs/
---web	Run Flask web UI on 127.0.0.1:5000
---selftest	Run built-in intent matching tests
---debug	Enable debug-level logging
-🔬 Code Breakdown
-1. Intent Matching Engine (3-Tier)
-Python
-def match(self, user_input: str):
-    # Tier 1: Exact phrase match (confidence = 1.0)
-    if norm in self.phrase_map:
-        return matched_intent, 1.0
+User Types	Expanded To
+ml	Machine Learning
+ai	Artificial Intelligence
+cicd	CI/CD
+web	Web Design Frontend HTML CSS
+cloud	Cloud Computing AWS Azure
+ds	Data Scientist Statistics
+py	Python
+js	JavaScript
+db	Database SQL Postgres MongoDB
+devops	Docker Kubernetes CI/CD Jenkins
+🔬 How It Works
+Step 1: TF-IDF Vectorization
+plain
+User Input:  "Python Machine Learning SQL"
+Job Role 1:  "Python Machine Learning Data Analysis SQL Statistics TensorFlow"
+Job Role 2:  "AWS Docker Kubernetes CI/CD Automation Linux Git Jenkins"
 
-    # Tier 2: Regex pattern match (confidence = 0.85)
-    for intent in sorted_by_priority:
-        if regex_matches(norm, intent.pattern):
-            return matched_intent, 0.85
+TF-IDF converts these into sparse numerical vectors where:
+- Rare terms (e.g., "TensorFlow") get higher weights
+- Common terms (e.g., "Python") get lower weights
+Step 2: Cosine Similarity
+plain
+Similarity = cos(θ) = (A · B) / (||A|| × ||B||)
 
-    # Tier 3: Keyword contains match (confidence = 0.85)
-    for intent in sorted_by_priority:
-        if keywords_in(norm, intent.examples):
-            return matched_intent, 0.85
-
-    # Fallback (confidence = 0.35)
-    return fallback_response, 0.35
-2. Profile System
+Range: 0.0 (completely different) → 1.0 (identical)
+Step 3: Confidence Classification
+plain
+Score ≥ 0.35  →  🟢 HIGH COMPATIBILITY
+Score ≥ 0.10  →  🟡 MEDIUM COMPATIBILITY
+Score < 0.10  →  🔴 LOW COMPATIBILITY
+Step 4: Skill Gap Analysis
 Python
-DEFAULT_PROFILE = {
-    "user_name": "Ahmed",
-    "spouse_name": "Mariyum",
-    "notes": "Wife is loving and a bit stubborn; user loves her back.",
-    "display_name_response": "MARIYUM KA AHMED"
-}
-Auto-saves to user_profile.json
-Editable at runtime via /profile-set
-Exportable/importable via JSON files
-3. Session Memory
-Python
-class Session:
-    def __init__(self, session_id: str, max_history: int = 20):
-        self.history: List[Tuple[str, str]] = []
-Stores last 20 user-bot exchanges
-FIFO eviction when limit reached
-4. Web UI (Optional Flask)
-Python
-@app.route("/api/chat", methods=["POST"])
-def chat():
-    reply, intent, conf, slots = engine.match(msg)
-    return jsonify({"reply": reply, "intent": intent, "confidence": conf})
-Simple HTML/JS frontend
-REST API endpoint for chat messages
+missing_skills = job_skills_set - user_skills_set
+# Shows exactly which skills the user needs to learn
+📊 Results & Output
+Console Output Includes:
+✅ Top-N ranked job recommendations (default: 3)
+✅ Vector Fit Matching Index (percentage similarity)
+✅ Color-coded confidence badge (Green/Yellow/Red)
+✅ Core Skill Gaps (missing skills per role)
+✅ Full Vocabulary Matrix (complete skill set for the role)
+Log File (logs/app.log) Captures:
+plain
+[2026-05-31 11:15:32] [INFO] [initialize_logging:95] Logging infrastructure initialized
+[2026-05-31 11:15:35] [INFO] [_initialize_dataset:142] Dataset ingested successfully | Rows: 5
+[2026-05-31 11:15:38] [DEBUG] [_expand_synonyms:312] Synonym expansion | 'ml' → 'Machine Learning'
+[2026-05-31 11:15:38] [INFO] [compute_recommendation_matrix:245] Recommendation matrix computed | Max similarity: 0.8542
 📸 Screenshots
-Place your execution screenshots in the /assets/ folder:
+Add your execution screenshots in the /assets/ folder and reference them here:
 Table
 Screenshot	Description
-Terminal conversation with identity injection
-Profile show/set/export commands
-Flask-based browser chat interface
-Rotating log file output
+User entering 3 skills in terminal
+Top-3 recommendations with confidence & gaps
+app.log showing audit trail
+Optional custom dataset loading
 🎓 Learning Outcomes
 Through this project, I have demonstrated:
-✅ Rule-Based NLP — Intent matching without neural networks or APIs
-✅ Regex Engineering — Pattern-based text understanding
-✅ Session State Management — In-memory conversation history
-✅ Profile Persistence — JSON-based user data storage
-✅ CLI UX Design — Interactive command-line interfaces
-✅ Admin System Design — Runtime configuration commands
-✅ Logging Best Practices — Rotating file handlers with UTF-8
-✅ Web API Basics — Flask REST endpoint for chatbot
-✅ Testing Culture — Built-in --selftest validation suite
-✅ Graceful Degradation — Fallback responses for unknown inputs
+✅ Content-Based Filtering — Building recommendation systems without collaborative data
+✅ TF-IDF Vectorization — Converting unstructured text into machine-readable vectors
+✅ Cosine Similarity — Measuring semantic alignment in high-dimensional space
+✅ NLP Preprocessing — Regex sanitization, synonym expansion, token normalization
+✅ Secure Configuration — Zero hardcoded values; full .env externalization
+✅ Defensive Programming — Custom exceptions, fallback datasets, graceful degradation
+✅ Professional Logging — Structured, timestamped, dual-channel audit system
+✅ Terminal UI Design — Unicode box-drawing with safe, auto-detecting ANSI colors
+✅ Type Safety — Comprehensive type hints across all functions and classes
+✅ DataFrame Operations — pandas for CSV ingestion, manipulation, and sorting
 🙏 Acknowledgements
-DecodeLabs — For the structured AI Engineering Internship opportunity
-Python Software Foundation — For the powerful standard library
+DecodeLabs — For providing this structured internship and learning opportunity
+Scikit-Learn Team — For the robust ML framework (TfidfVectorizer, cosine_similarity)
+Pandas Development Team — For powerful data manipulation tools
+Python Software Foundation — For the versatile standard library
 📬 Contact
 Intern Name: [M AHMED ALI ]
 Email: [muhammadahmedali607@gmail.com ]
