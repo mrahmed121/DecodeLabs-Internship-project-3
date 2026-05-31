@@ -190,10 +190,10 @@ Through this project, I have demonstrated:
 DecodeLabs — For the structured AI Engineering Internship opportunity
 Python Software Foundation — For the powerful standard library
 📬 Contact
-Intern Name: [Your Name]
-Email: [your.email@example.com]
-LinkedIn: [Your LinkedIn Profile]
-GitHub: [Your GitHub Profile]
+Intern Name: [M AHMED ALI ]
+Email: [muhammadahmedali607@gmail.com ]
+LinkedIn: [  www.linkedin.com/in/muhammad-ahmed-ali-123125406]
+GitHub: [https://github.com/mrahmed121]
 <div align="center">
 ⭐ DecodeLabs AI Engineering Internship — Week 1 ⭐
 Project 1: AI-Powered Conversational Bot (Rule-Based Edition)
